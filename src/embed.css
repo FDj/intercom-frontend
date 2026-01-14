@@ -1,0 +1,89 @@
+/* Scoped styles for embedded intercom app */
+[data-intercom-embed] {
+  /* Container base styles - equivalent to html { font-size: 62.5% } but compensate for scale */
+  font-size: 100%; /* Will scale down via transform, so start at 100% */
+  box-sizing: border-box;
+  /*height: 100%;*/
+  overscroll-behavior: contain;
+
+  /* Scale down to 62% for button/icon sizes */
+  transform: scale(0.50);
+  transform-origin: top left;
+  width: 161.29%; /* Compensate for scale: 100% / 0.62 */
+  height: 161.29%;
+}
+
+/* Inner wrapper styles - equivalent to body */
+[data-intercom-embed] > div {
+  font-size: 1.6rem;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+}
+
+[data-intercom-embed] *,
+[data-intercom-embed] *:before,
+[data-intercom-embed] *:after {
+  box-sizing: inherit;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* Minimal reset - only reset what's necessary and won't break styled-components */
+
+[data-intercom-embed] article,
+[data-intercom-embed] aside,
+[data-intercom-embed] details,
+[data-intercom-embed] figcaption,
+[data-intercom-embed] figure,
+[data-intercom-embed] footer,
+[data-intercom-embed] header,
+[data-intercom-embed] hgroup,
+[data-intercom-embed] menu,
+[data-intercom-embed] nav,
+[data-intercom-embed] section {
+  display: block;
+}
+
+[data-intercom-embed] ol,
+[data-intercom-embed] ul {
+  list-style: none;
+}
+
+[data-intercom-embed] blockquote,
+[data-intercom-embed] q {
+  quotes: none;
+}
+
+[data-intercom-embed] blockquote:before,
+[data-intercom-embed] blockquote:after,
+[data-intercom-embed] q:before,
+[data-intercom-embed] q:after {
+  content: "";
+  content: none;
+}
+
+[data-intercom-embed] table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+[data-intercom-embed] img,
+[data-intercom-embed] svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+[data-intercom-embed] strong {
+  font-weight: bold;
+}

@@ -23,7 +23,7 @@ import { ManageProductionsPage } from "./components/manage-productions-page/mana
 import { CreateProductionPage } from "./components/create-production/create-production-page.tsx";
 import { useSetupTokenRefresh } from "./hooks/use-reauth.tsx";
 import { TUserSettings } from "./components/user-settings/types";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { Routes, Route } from "react-router";
 
 const DisplayBoxPositioningContainer = styled(FlexContainer)`
   justify-content: center;
@@ -77,7 +77,7 @@ const AppContent = ({
   }, [setupTokenRefresh]);
 
   return (
-    <BrowserRouter>
+    <>
       {!isDeclutterMode && <Header />}
       <ErrorBanner />
 
@@ -163,7 +163,7 @@ const AppContent = ({
           )}
         </>
       )}
-    </BrowserRouter>
+    </>
   );
 };
 

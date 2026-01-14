@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/headset.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Intercom - Embedded</title>
+  </head>
+  <body>
+    <h1 style="color: white; padding: 20px;">Multiple Intercom Embeds Test</h1>
+
+    <div style="display: flex; gap: 20px; padding: 20px;">
+      <div
+        id="intercom-container-1"
+        data-intercom-embed
+        data-declutter="true"
+        data-username="TestUser"
+        data-kiosk="true"
+        data-uri="production-calls/production/6/line/1"
+        style="flex: 1; min-height: 400px;"
+      ></div>
+
+      <div
+        id="intercom-container-2"
+        data-intercom-embed
+        data-declutter="true"
+        data-username="TestUser"
+        data-kiosk="true"
+        data-uri="production-calls/production/5/line/1"
+        style="flex: 1; min-height: 400px;"
+      ></div>
+    </div>
+
+    <script type="module" src="/src/embed.tsx"></script>
+  </body>
+</html>
