@@ -172,6 +172,24 @@ export const UserSettingsForm = ({
     }
   }, [devices, setValue]);
 
+  // Set default devices when they become available
+  useEffect(() => {
+    if (isFirstConnection && devices.input?.length && devices.output?.length) {
+      const currentInput = control._formValues.audioinput;
+      const currentOutput = control._formValues.audiooutput;
+
+      // Set default input device if not already set
+      if (!currentInput && devices.input[0]) {
+        setValue("audioinput", devices.input[0].deviceId, { shouldValidate: true });
+      }
+
+      // Set default output device if not already set
+      if (!currentOutput && devices.output[0]) {
+        setValue("audiooutput", devices.output[0].deviceId, { shouldValidate: true });
+      }
+    }
+  }, [isFirstConnection, devices.input, devices.output, setValue, control]);
+
   // If user selects a production from the productionlist
   useEffect(() => {
     if (selectedProductionId && isJoinProduction) {
@@ -189,6 +207,7 @@ export const UserSettingsForm = ({
     isBrowserFirefox,
     setConfirmModalOpen,
   });
+
 
   return (
     <div style={{ minWidth: updateUserSettings ? "40rem" : "" }}>

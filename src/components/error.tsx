@@ -31,7 +31,21 @@ const CloseErrorButton = styled.button`
 
 export const ErrorBanner: FC = () => {
   const [callError, setCallError] = useState<string[] | null>(null);
+  const [showGlobalError, setShowGlobalError] = useState(false);
   const [{ error }, dispatch] = useGlobalState();
+
+  // Delay showing global errors to avoid flashing during initial load
+  useEffect(() => {
+    if (error.globalError) {
+      const timer = setTimeout(() => {
+        setShowGlobalError(true);
+      }, 500); // 500ms delay
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowGlobalError(false);
+    }
+  }, [error.globalError]);
 
   useEffect(() => {
     const displayedMessages = new Set<string>();
@@ -61,7 +75,7 @@ export const ErrorBanner: FC = () => {
 
   return (
     <>
-      {error.globalError && (
+      {error.globalError && showGlobalError && (
         <ErrorDisplay>
           {`${error.globalError.name}: ${error.globalError.message}`}{" "}
           <CloseErrorButton

@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { FC } from "react";
 import { UserSettingsIcon } from "../../assets/icons/icon";
 import { useStorage } from "../accessing-local-storage/access-local-storage";
+import { useUrlParams } from "../../hooks/use-url-params";
 import { isMobile } from "../../bowser";
 
 const UserSettingsWrapper = styled.div`
@@ -49,7 +50,9 @@ interface UserSettingsButtonProps {
 export const UserSettingsButton: FC<UserSettingsButtonProps> = (props) => {
   const { onClick } = props;
   const { readFromStorage } = useStorage();
-  const username = readFromStorage("username") || "Guest";
+  const { usernameFromUrl } = useUrlParams();
+
+  const username = usernameFromUrl || readFromStorage("username") || "Guest";
 
   return (
     <UserSettingsWrapper className={isMobile ? "mobile" : ""} onClick={onClick}>

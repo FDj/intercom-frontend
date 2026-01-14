@@ -2,6 +2,7 @@ import { Dispatch, useEffect } from "react";
 import { DevicesState } from "../global-state/types";
 import { TGlobalStateAction } from "../global-state/global-state-actions";
 import { useStorage } from "../components/accessing-local-storage/access-local-storage";
+import { useUrlParams } from "./use-url-params";
 
 type TUseLocalUserSettings = {
   devices: DevicesState;
@@ -13,6 +14,8 @@ export const useLocalUserSettings = ({
   dispatch,
 }: TUseLocalUserSettings) => {
   const { readFromStorage, removeFromStorage } = useStorage();
+  const { usernameFromUrl } = useUrlParams();
+
   useEffect(() => {
     if (devices.input || devices.output) {
       const storedAudioInput = readFromStorage("audioinput");
@@ -32,7 +35,7 @@ export const useLocalUserSettings = ({
       if (!foundOutputDevice) removeFromStorage("audiooutput");
 
       const payload = {
-        username: readFromStorage("username") || "",
+        username: usernameFromUrl || readFromStorage("username") || "",
         audioinput: foundInputDevice,
         audiooutput: foundOutputDevice,
       };
@@ -42,5 +45,5 @@ export const useLocalUserSettings = ({
         payload,
       });
     }
-  }, [devices, dispatch, readFromStorage, removeFromStorage]);
+  }, [devices, dispatch, readFromStorage, removeFromStorage, usernameFromUrl]);
 };

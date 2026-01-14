@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGlobalState } from "../../global-state/context-provider";
 import { useCallList } from "../../hooks/use-call-list";
+import { useUrlParams } from "../../hooks/use-url-params";
 import { JoinProduction } from "../landing-page/join-production";
 import { UserSettingsButton } from "../landing-page/user-settings-button";
 import { Modal } from "../modal/modal";
@@ -18,6 +19,8 @@ import { useGlobalMuteHotkey } from "./use-global-mute-hotkey";
 import { usePreventPullToRefresh } from "./use-prevent-pull-to-refresh";
 import { useSpeakerDetection } from "./use-speaker-detection";
 import { useSendWSCallStateUpdate } from "./use-send-ws-callstate-update";
+import { useInitiateProductionCall } from "../../hooks/use-initiate-production-call";
+import { useFetchProductionList } from "../landing-page/use-fetch-production-list";
 
 const Container = styled.div`
   display: flex;
@@ -43,8 +46,10 @@ export const CallsPage = () => {
   const [confirmExitModalOpen, setConfirmExitModalOpen] =
     useState<boolean>(false);
   const [isMasterInputMuted, setIsMasterInputMuted] = useState<boolean>(true);
-  const [{ calls, selectedProductionId, websocket }, dispatch] =
+  const [{ calls, selectedProductionId, websocket, devices, userSettings }, dispatch] =
     useGlobalState();
+  const { initiateProductionCall } = useInitiateProductionCall({ dispatch });
+  const kioskModeJoinedRef = useRef<boolean>(false);
   const {
     deregisterCall,
     registerCallList,
@@ -61,15 +66,19 @@ export const CallsPage = () => {
 
   const { productionId: paramProductionId, lineId: paramLineId } = useParams();
 
+  const isEmpty = Object.values(calls).length === 0;
+  const isSingleCall = Object.values(calls).length === 1;
+  const isFirstConnection = isEmpty && paramProductionId && paramLineId;
+
   const navigate = useCallsNavigation({
     isEmpty: Object.values(calls).length === 0,
     paramProductionId,
     paramLineId,
   });
 
-  const isEmpty = Object.values(calls).length === 0;
-  const isSingleCall = Object.values(calls).length === 1;
-  const isFirstConnection = isEmpty && paramProductionId && paramLineId;
+  // Check for kiosk mode and username from URL
+  const { usernameFromUrl, isKioskParam } = useUrlParams();
+  const isKioskMode = isFirstConnection && isKioskParam;
 
   const isProgramOutputAdded = Object.entries(calls).some(
     ([, callState]) =>
@@ -120,6 +129,92 @@ export const CallsPage = () => {
   });
 
   const { playExitSound } = useAudioCue();
+
+  const { productions } = useFetchProductionList({
+    limit: "100",
+    extended: "true",
+  });
+
+  // Auto-join in kiosk mode
+  useEffect(() => {
+    const username = usernameFromUrl || userSettings?.username;
+
+    if (
+      isKioskMode &&
+      isEmpty &&
+      paramProductionId &&
+      paramLineId &&
+      devices.input?.length &&
+      devices.output?.length &&
+      productions &&
+      !kioskModeJoinedRef.current &&
+      username
+    ) {
+      const production = productions.productions.find(
+        (p) => p.productionId === paramProductionId
+      );
+
+      if (!production) return;
+
+      const selectedLine = production.lines.find(
+        (line) => line.id.toString() === paramLineId
+      );
+
+      if (!selectedLine) return;
+
+      // Use first available devices
+      const audioinput = devices.input[0]?.deviceId || "no-device";
+      const audiooutput = devices.output[0]?.deviceId;
+
+      if (!audioinput) return;
+
+      // Clear any previous errors before joining
+      dispatch({
+        type: "ERROR",
+        payload: { error: null },
+      });
+
+      const options = {
+        productionId: paramProductionId,
+        lineId: paramLineId,
+        username,
+        audioinput,
+        lineUsedForProgramOutput: selectedLine.programOutputLine || false,
+        isProgramUser: false,
+        lineName: selectedLine.name,
+        productionName: production.name,
+      };
+
+      // Mark that we've initiated the join to prevent duplicate calls
+      kioskModeJoinedRef.current = true;
+
+      initiateProductionCall({
+        payload: {
+          joinProductionOptions: options,
+          audiooutput,
+        },
+        customGlobalMute,
+      }).then((success) => {
+        if (!success) {
+          // If it failed, allow retry
+          kioskModeJoinedRef.current = false;
+        }
+      });
+    }
+  }, [
+    isKioskMode,
+    isEmpty,
+    paramProductionId,
+    paramLineId,
+    devices.input,
+    devices.output,
+    productions,
+    usernameFromUrl,
+    userSettings?.username,
+    initiateProductionCall,
+    customGlobalMute,
+    dispatch,
+  ]);
 
   const runExitAllCalls = async () => {
     setProductionId(null);
@@ -189,7 +284,7 @@ export const CallsPage = () => {
         />
       </PageHeader>
       <Container>
-        {isEmpty && paramProductionId && paramLineId && (
+        {isEmpty && paramProductionId && paramLineId && !isKioskMode && (
           <JoinProduction
             preSelected={{
               preSelectedProductionId: paramProductionId,
