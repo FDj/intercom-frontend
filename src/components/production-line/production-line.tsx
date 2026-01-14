@@ -66,6 +66,7 @@ type TProductionLine = {
     isSettingGlobalMute?: boolean
   ) => void;
   deregisterCall?: (callId: string) => void;
+  isDeclutterMode?: boolean;
 };
 
 export const ProductionLine = ({
@@ -80,6 +81,7 @@ export const ProductionLine = ({
   setFailedToConnect,
   registerCallList,
   deregisterCall,
+  isDeclutterMode = false,
 }: TProductionLine) => {
   const { productionId: paramProductionId, lineId: paramLineId } = useParams();
   const [, dispatch] = useGlobalState();
@@ -92,7 +94,7 @@ export const ProductionLine = ({
   const [muteError, setMuteError] = useState(false);
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
-  const [open, setOpen] = useState<boolean>(!isMobile);
+  const [open, setOpen] = useState<boolean>(isDeclutterMode ? false : !isMobile);
   const {
     joinProductionOptions,
     audiooutput,
@@ -466,6 +468,7 @@ export const ProductionLine = ({
               line={line}
               production={production}
               setOpen={() => setOpen(!open)}
+              isDeclutterMode={isDeclutterMode}
             />
           )}
           {!open && joinProductionOptions && (
@@ -600,7 +603,7 @@ export const ProductionLine = ({
                   </ListWrapper>
                 </FlexContainer>
               )}
-              {production && line && (
+              {production && line && !isDeclutterMode && (
                 <UrlButtonsWrapper>
                   <GenerateWhipUrlButton
                     productionId={production.productionId}

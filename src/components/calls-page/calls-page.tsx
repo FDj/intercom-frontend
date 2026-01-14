@@ -77,7 +77,7 @@ export const CallsPage = () => {
   });
 
   // Check for kiosk mode and username from URL
-  const { usernameFromUrl, isKioskParam } = useUrlParams();
+  const { usernameFromUrl, isKioskParam, isDeclutterMode } = useUrlParams();
   const isKioskMode = isFirstConnection && isKioskParam;
 
   const isProgramOutputAdded = Object.entries(calls).some(
@@ -235,54 +235,57 @@ export const CallsPage = () => {
 
   return (
     <>
-      {!isFirstConnection && (
+      {!isFirstConnection && !isDeclutterMode && (
         <UserSettingsButton onClick={() => setShowSettings(!showSettings)} />
       )}
-      <PageHeader
-        title={!isEmpty ? "Calls" : ""}
-        hasNavigateToRoot
-        onNavigateToRoot={() => {
-          if (isEmpty) {
-            runExitAllCalls();
-          } else {
-            setConfirmExitModalOpen(true);
-          }
-        }}
-      >
-        {confirmExitModalOpen && (
-          <ConfirmationModal
-            title="Confirm"
-            description="Are you sure you want to leave all calls?"
-            confirmationText="This will leave all calls and return to the home page."
-            onCancel={() => setConfirmExitModalOpen(false)}
-            onConfirm={runExitAllCalls}
-          />
-        )}
-
-        {showSettings && (
-          <Modal onClose={() => setShowSettings(false)}>
-            <UserSettings
-              buttonText="Save"
-              needsConfirmation
-              onSave={() => setShowSettings(false)}
+      {!isDeclutterMode && (
+        <PageHeader
+          title={!isEmpty ? "Calls" : ""}
+          hasNavigateToRoot
+          onNavigateToRoot={() => {
+            if (isEmpty) {
+              runExitAllCalls();
+            } else {
+              setConfirmExitModalOpen(true);
+            }
+          }}
+        >
+          {confirmExitModalOpen && (
+            <ConfirmationModal
+              title="Confirm"
+              description="Are you sure you want to leave all calls?"
+              confirmationText="This will leave all calls and return to the home page."
+              onCancel={() => setConfirmExitModalOpen(false)}
+              onConfirm={runExitAllCalls}
             />
-          </Modal>
-        )}
+          )}
 
-        <HeaderActions
-          setIsSettingGlobalMute={setIsSettingGlobalMute}
-          isEmpty={isEmpty}
-          isSingleCall={isSingleCall}
-          isMasterInputMuted={isMasterInputMuted}
-          setIsMasterInputMuted={setIsMasterInputMuted}
-          addCallActive={addCallActive}
-          setAddCallActive={setAddCallActive}
-          callIndexMap={callIndexMap}
-          callActionHandlers={callActionHandlers}
-          sendCallsStateUpdate={sendCallsStateUpdate}
-          resetLastSentCallsState={resetLastSentCallsState}
-        />
-      </PageHeader>
+          {showSettings && (
+            <Modal onClose={() => setShowSettings(false)}>
+              <UserSettings
+                buttonText="Save"
+                needsConfirmation
+                onSave={() => setShowSettings(false)}
+              />
+            </Modal>
+          )}
+
+          <HeaderActions
+            setIsSettingGlobalMute={setIsSettingGlobalMute}
+            isEmpty={isEmpty}
+            isSingleCall={isSingleCall}
+            isMasterInputMuted={isMasterInputMuted}
+            setIsMasterInputMuted={setIsMasterInputMuted}
+            addCallActive={addCallActive}
+            setAddCallActive={setAddCallActive}
+            callIndexMap={callIndexMap}
+            callActionHandlers={callActionHandlers}
+            sendCallsStateUpdate={sendCallsStateUpdate}
+            resetLastSentCallsState={resetLastSentCallsState}
+            isDeclutterMode={isDeclutterMode}
+          />
+        </PageHeader>
+      )}
       <Container>
         {isEmpty && paramProductionId && paramLineId && !isKioskMode && (
           <JoinProduction
@@ -315,6 +318,7 @@ export const CallsPage = () => {
             calls={calls}
             registerCallList={registerCallList}
             deregisterCall={deregisterCall}
+            isDeclutterMode={isDeclutterMode}
           />
         </CallsContainer>
       </Container>

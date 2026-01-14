@@ -57,6 +57,7 @@ type HeaderActionsProps = {
   setIsSettingGlobalMute: React.Dispatch<React.SetStateAction<boolean>>;
   sendCallsStateUpdate: () => void;
   resetLastSentCallsState: () => void;
+  isDeclutterMode?: boolean;
 };
 export const HeaderActions = ({
   isEmpty,
@@ -70,6 +71,7 @@ export const HeaderActions = ({
   setIsSettingGlobalMute,
   sendCallsStateUpdate,
   resetLastSentCallsState,
+  isDeclutterMode = false,
 }: HeaderActionsProps) => {
   const { handleToggleGlobalMute } = useGlobalMuteToggle({
     setIsMasterInputMuted,
@@ -78,7 +80,7 @@ export const HeaderActions = ({
 
   return (
     <HeaderButtons>
-      {!isEmpty && !isMobile && !isTablet && (
+      {!isEmpty && !isMobile && !isTablet && !isDeclutterMode && (
         <ConnectToWSButton
           callActionHandlers={callActionHandlers}
           callIndexMap={callIndexMap}
@@ -98,7 +100,7 @@ export const HeaderActions = ({
           {isMasterInputMuted ? <MicMuted /> : <MicUnmuted />}
         </MuteAllCallsBtn>
       )}
-      {!isEmpty && (
+      {!isEmpty && !isDeclutterMode && (
         <AddCallContainer>
           <SecondaryButton
             type="button"

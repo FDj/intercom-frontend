@@ -9,9 +9,12 @@ export const useUrlParams = () => {
   const usernameFromUrl = urlParams.get("username");
   const kioskParam = urlParams.get("kiosk");
   const isKioskParam = kioskParam === "1";
+  const declutterParam = urlParams.get("declutter");
+  const isDeclutterMode = declutterParam === "1";
 
   return {
     usernameFromUrl,
     isKioskParam,
+    isDeclutterMode,
   };
 };

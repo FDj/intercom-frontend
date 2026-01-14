@@ -19,6 +19,7 @@ type ProductionLinesProps = {
     isSettingGlobalMute?: boolean
   ) => void;
   deregisterCall: (callId: string) => void;
+  isDeclutterMode?: boolean;
 };
 
 export const ProductionLines = ({
@@ -32,6 +33,7 @@ export const ProductionLines = ({
   setAddCallActive,
   registerCallList,
   deregisterCall,
+  isDeclutterMode = false,
 }: ProductionLinesProps) => {
   return (
     <>
@@ -52,6 +54,7 @@ export const ProductionLines = ({
               callActionHandlers={callActionHandlers}
               registerCallList={registerCallList}
               deregisterCall={deregisterCall}
+              isDeclutterMode={isDeclutterMode}
             />
           )
       )}

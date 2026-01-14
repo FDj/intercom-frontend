@@ -12,8 +12,9 @@ export const ProductionName = styled.div`
   text-overflow: ellipsis;
 
   .production-name-container {
-    display: inline-block;
-    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 `;
 

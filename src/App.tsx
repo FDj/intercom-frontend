@@ -18,6 +18,7 @@ import { NavigateToRootButton } from "./components/navigate-to-root-button/navig
 import { CallsPage } from "./components/calls-page/calls-page.tsx";
 import { Header } from "./components/header.tsx";
 import { useLocalUserSettings } from "./hooks/use-local-user-settings.ts";
+import { useUrlParams } from "./hooks/use-url-params.ts";
 import { ManageProductionsPage } from "./components/manage-productions-page/manage-productions-page.tsx";
 import { CreateProductionPage } from "./components/create-production/create-production-page.tsx";
 import { useSetupTokenRefresh } from "./hooks/use-reauth.tsx";
@@ -68,6 +69,7 @@ const AppContent = ({
   setApiError,
 }: AppContentProps) => {
   const { setupTokenRefresh } = useSetupTokenRefresh();
+  const { isDeclutterMode } = useUrlParams();
 
   useEffect(() => {
     const cleanup = setupTokenRefresh();
@@ -76,7 +78,7 @@ const AppContent = ({
 
   return (
     <BrowserRouter>
-      <Header />
+      {!isDeclutterMode && <Header />}
       <ErrorBanner />
 
       {!isValidBrowser && !continueToApp && (

@@ -1,10 +1,12 @@
 import { useMemo } from "react";
+import styled from "@emotion/styled";
 import {
   UsersIcon,
   ChevronUpIcon,
   ChevronDownIcon,
   TVIcon,
   WhipIcon,
+  HeadsetIcon,
 } from "../../assets/icons/icon";
 import {
   ProductionName,
@@ -18,20 +20,37 @@ import { TLine } from "./types";
 import { TBasicProductionResponse } from "../../api/api";
 import { CopyLink } from "../production-list/copy-link";
 
+const SmallHeadsetIcon = styled.span`
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5rem;
+
+  svg {
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+  }
+`;
+
 export const CallHeaderComponent = ({
   open,
   line,
   production,
   setOpen,
+  isDeclutterMode = false,
 }: {
   open: boolean;
   line: TLine | null;
   production: TBasicProductionResponse | null;
   setOpen: () => void;
+  isDeclutterMode?: boolean;
 }) => {
+  // In declutter mode, allow longer names since we don't show the copy link button
+  const maxProductionNameLength = isDeclutterMode ? 30 : 20;
+  const maxLineNameLength = isDeclutterMode ? 50 : 40;
+
   const truncatedProductionName =
-    production && production.name.length > 20
-      ? `${production.name.slice(0, 20)}...`
+    production && production.name.length > maxProductionNameLength
+      ? `${production.name.slice(0, maxProductionNameLength)}...`
       : production?.name;
 
   const truncatedLineName =
@@ -59,12 +78,17 @@ export const CallHeaderComponent = ({
         )}
         <ProductionNameWrapper>
           <ProductionName title={`${production?.name} / ${line?.name}`}>
+            {isDeclutterMode && (
+              <SmallHeadsetIcon>
+                <HeadsetIcon />
+              </SmallHeadsetIcon>
+            )}
             <span className="production-name-container">
               {`${truncatedProductionName}/ ${truncatedLineName}`}
             </span>
           </ProductionName>
 
-          {production && line && (
+          {production && line && !isDeclutterMode && (
             <CopyLink production={production} line={line} />
           )}
         </ProductionNameWrapper>
