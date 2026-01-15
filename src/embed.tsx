@@ -187,6 +187,12 @@ function initIntercomEmbed(containerId: string) {
     return;
   }
 
+  // If already initialized, don't do it again
+  if ((container as any)._intercomInitialized) {
+    return;
+  }
+  (container as any)._intercomInitialized = true;
+
   // Read data attributes
   const declutter = container.dataset.declutter === "true";
   const username = container.dataset.username || "";
@@ -224,13 +230,14 @@ function initIntercomEmbed(containerId: string) {
     container.style.height = '80px';
 
     // Remove loading state after 2 seconds
-    setTimeout(() => {
+    const loadingTimeout = setTimeout(() => {
       scaleWrapper.classList.remove('loading');
       if (placeholder.parentNode) {
         placeholder.parentNode.removeChild(placeholder);
       }
       adjustHeight();
     }, 2000);
+    (container as any)._intercomLoadingTimeout = loadingTimeout;
   }
 
   // Set up height adjustment for scaled content
@@ -266,6 +273,7 @@ function initIntercomEmbed(containerId: string) {
       <EmbeddedApp initialPath={uri} />
     </React.StrictMode>
   );
+  (container as any)._intercomRoot = root;
 
   // Use ResizeObserver to detect content changes and adjust height
   const resizeObserver = new ResizeObserver(() => {
@@ -280,12 +288,15 @@ function initIntercomEmbed(containerId: string) {
     }
   }, 100);
 
+  (container as any)._intercomResizeObserver = resizeObserver;
+  (container as any)._intercomObserverInterval = observerInterval;
+
   // Initial adjustment
-  setTimeout(adjustHeight, 1000);
+  const initialAdjustmentTimeout = setTimeout(adjustHeight, 1000);
+  (container as any)._intercomInitialAdjustmentTimeout = initialAdjustmentTimeout;
 }
 
-// Auto-initialize all containers with data-intercom-embed
-document.addEventListener("DOMContentLoaded", () => {
+const bootEmbeds = () => {
   const containers = document.querySelectorAll("[data-intercom-embed]");
   containers.forEach((container) => {
     if (container.id) {
@@ -294,7 +305,54 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Intercom embed container found without an ID", container);
     }
   });
-});
+};
+
+const teardownEmbeds = () => {
+  const containers = document.querySelectorAll("[data-intercom-embed]");
+  containers.forEach((container: any) => {
+    if (container._intercomRoot) {
+      container._intercomRoot.unmount();
+      delete container._intercomRoot;
+    }
+    if (container._intercomResizeObserver) {
+      container._intercomResizeObserver.disconnect();
+      delete container._intercomResizeObserver;
+    }
+    if (container._intercomObserverInterval) {
+      clearInterval(container._intercomObserverInterval);
+      delete container._intercomObserverInterval;
+    }
+    if (container._intercomLoadingTimeout) {
+      clearTimeout(container._intercomLoadingTimeout);
+      delete container._intercomLoadingTimeout;
+    }
+    if (container._intercomInitialAdjustmentTimeout) {
+      clearTimeout(container._intercomInitialAdjustmentTimeout);
+      delete container._intercomInitialAdjustmentTimeout;
+    }
+    // Remove the scale wrapper and placeholder if they were added
+    const scaleWrapper = container.querySelector('.intercom-scale-wrapper');
+    if (scaleWrapper) {
+      scaleWrapper.remove();
+    }
+    const placeholder = container.querySelector('.intercom-embed-placeholder');
+    if (placeholder) {
+      placeholder.remove();
+    }
+    delete container._intercomInitialized;
+  });
+};
+
+// Auto-initialize all containers with data-intercom-embed
+document.addEventListener("DOMContentLoaded", bootEmbeds);
+
+// Turbo fires on initial load + every Turbo visit:
+document.addEventListener("turbo:load", bootEmbeds);
+
+// If you need cleanup between visits:
+document.addEventListener("turbo:before-cache", teardownEmbeds);
 
 // Export for manual initialization
 (window as any).initIntercomEmbed = initIntercomEmbed;
+(window as any).bootIntercomEmbeds = bootEmbeds;
+(window as any).teardownIntercomEmbeds = teardownEmbeds;
