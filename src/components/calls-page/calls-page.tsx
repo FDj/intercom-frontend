@@ -35,6 +35,15 @@ const CallsContainer = styled.div`
   gap: 2rem;
   padding: 0 2rem 2rem 2rem;
 
+  [data-intercom-embed] & {
+    padding: 0;
+    gap: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+
   form {
     margin: 0;
   }

@@ -9,6 +9,12 @@ const DisplayBox = styled.div`
   border-radius: 0.5rem;
   max-width: 50rem;
   margin: 0 1rem;
+
+  [data-intercom-embed] &,
+  [data-intercom-embed-container] & {
+    max-width: 100%;
+    margin: 0;
+  }
 `;
 
 const DisplayBoxTitle = styled.div`
@@ -18,6 +24,12 @@ const DisplayBoxTitle = styled.div`
   color: white;
   font-size: 2rem;
   font-weight: bold;
+
+  [data-intercom-embed] &,
+  [data-intercom-embed-container] & {
+    font-size: 1.6rem;
+    padding: 0.8rem;
+  }
 `;
 
 const DisplayBoxText = styled.div`
@@ -27,6 +39,15 @@ const DisplayBoxText = styled.div`
     font-size: 1.6rem;
     line-height: 1.4;
     padding: 0 0 1rem;
+  }
+
+  [data-intercom-embed] &,
+  [data-intercom-embed-container] & {
+    padding: 0.8rem;
+    p {
+      font-size: 1.4rem;
+      padding: 0;
+    }
   }
 `;
 

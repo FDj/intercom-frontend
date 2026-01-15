@@ -29,6 +29,11 @@ const DisplayBoxPositioningContainer = styled(FlexContainer)`
   justify-content: center;
   align-items: center;
   padding-top: 12rem;
+
+  [data-intercom-embed] &,
+  [data-intercom-embed-container] & {
+    padding-top: 2rem;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -184,15 +189,20 @@ const App = () => {
 
   return (
     <GlobalStateContext.Provider value={initializedGlobalState}>
-      <AppContent
-        continueToApp={continueToApp}
-        denied={denied}
-        permission={permission}
-        apiError={apiError}
-        userSettings={userSettings}
-        setUnsupportedContinue={setUnsupportedContinue}
-        setApiError={setApiError}
-      />
+      <div
+        className="intercom-app-container"
+        data-intercom-embed-container={true}
+      >
+        <AppContent
+          continueToApp={continueToApp}
+          denied={denied}
+          permission={permission}
+          apiError={apiError}
+          userSettings={userSettings}
+          setUnsupportedContinue={setUnsupportedContinue}
+          setApiError={setApiError}
+        />
+      </div>
     </GlobalStateContext.Provider>
   );
 };

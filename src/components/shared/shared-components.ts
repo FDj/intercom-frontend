@@ -8,6 +8,10 @@ export const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 2rem;
+
+  [data-intercom-embed] & {
+    padding: 1rem;
+  }
 `;
 
 export const HeaderTexts = styled.div`
@@ -41,15 +45,25 @@ export const HeaderIcon = styled.div`
 export const CollapsibleItemWrapper = styled.div`
   text-align: start;
   color: #ffffff;
-  background-color: transparent;
+  background-color: #242424;
   flex: 0 0 calc(25% - 2rem);
   ${isMobile ? `flex-grow: 1;` : `flex-grow: 0;`}
   justify-content: start;
-  min-width: 34rem;
+  min-width: 25rem;
   border: 1px solid #424242;
   border-radius: 0.5rem;
   margin: 0 2rem 2rem 0;
   cursor: pointer;
+  box-sizing: border-box;
+
+  [data-intercom-embed] & {
+    margin: 0 0 0 0;
+    min-width: 0;
+    flex: 1 1 100%;
+    max-width: 100%;
+    border: 1px solid #424242;
+    border-radius: 0.5rem;
+  }
 
   ${mediaQueries.isLargeScreen} {
     flex: 0 0 calc(33.333% - 2rem);

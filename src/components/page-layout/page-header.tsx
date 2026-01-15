@@ -18,6 +18,12 @@ const HeaderContainer = styled(DisplayContainer)`
     height: 2.5rem;
     width: 2.5rem;
   }
+
+  [data-intercom-embed] & {
+    padding: 1rem;
+    height: auto;
+    min-height: 4rem;
+  }
 `;
 
 const HeaderLeftSide = styled.div`

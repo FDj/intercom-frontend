@@ -147,12 +147,23 @@ export const CallWrapper = styled.div<{ isSomeoneSpeaking: boolean }>`
   margin: 0 0 2rem 0;
   flex: 0 0 calc(25% - 2rem);
   ${isMobile ? `flex-grow: 1;` : `flex-grow: 0;`}
-  min-width: 35rem;
+  min-width: 25rem;
   max-width: 49rem;
   background-color: transparent;
   border-radius: 0.5rem;
   animation: ${({ isSomeoneSpeaking }) =>
     isSomeoneSpeaking ? "pulsate 1.5s ease-in-out infinite" : "none"};
+
+  [data-intercom-embed] & {
+    margin: 0 0 1.5rem 0;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    flex: 1 1 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 0;
+  }
 
   @keyframes pulsate {
     0% {
@@ -186,9 +197,10 @@ export const CallContainer = styled(CollapsibleItemWrapper)<{
   width: 100%;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 
   background: ${({ isProgramLine }) =>
-    isProgramLine ? "rgba(73, 67, 124, 0.2)" : "transparent"};
+    isProgramLine ? "rgba(73, 67, 124, 0.2)" : "#242424"};
 `;
 
 export const CallHeader = styled(HeaderWrapper)`
@@ -198,7 +210,7 @@ export const CallHeader = styled(HeaderWrapper)`
 `;
 
 export const MinifiedControls = styled.div`
-  padding: 0 2rem 2rem 2rem;
+  padding: 0 2rem 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -206,6 +218,10 @@ export const MinifiedControls = styled.div`
   align-items: center;
   button {
     margin: 0;
+  }
+
+  [data-intercom-embed] & {
+    padding: 0 1rem 1rem 1rem;
   }
 `;
 

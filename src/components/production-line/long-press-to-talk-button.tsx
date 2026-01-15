@@ -16,7 +16,7 @@ const Button = styled(PrimaryButton)`
   width: 100%;
 
   &.active-btn {
-    color: rgba(255, 255, 255, 0);
+    color: #482307;
     animation: pulse 0.7s ease-in-out infinite alternate;
   }
 
