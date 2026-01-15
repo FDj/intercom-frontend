@@ -46,7 +46,7 @@ export const CallHeaderComponent = ({
 }) => {
   // In declutter mode, allow longer names since we don't show the copy link button
   const maxProductionNameLength = isDeclutterMode ? 30 : 20;
-  const maxLineNameLength = isDeclutterMode ? 50 : 40;
+  //const maxLineNameLength = isDeclutterMode ? 50 : 40;
 
   const truncatedProductionName =
     production && production.name.length > maxProductionNameLength
