@@ -1,11 +1,11 @@
 #!/bin/bash
 
-OLD_EMBED_JS="../tapgig-mono/apps/rails/public/intercom_assets/embed.js"
+OLD_ASSETS="../tapgig-mono/apps/rails/public/intercom_assets/assets"
 
-if [ -f $OLD_EMBED_JS ] ; then
+if [ -d $OLD_ASSETS ] ; then
   vite build
   rsync -avz --delete dist/ ../tapgig-mono/apps/rails/public/intercom_assets/
 else
-  echo "$OLD_EMBED_JS not found, not syncing -- check your paths!"
+  echo "$OLD_ASSETS not found, not syncing -- check your paths!"
 fi
 

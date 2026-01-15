@@ -15,7 +15,7 @@ export default defineConfig({
       output: {
         entryFileNames: (chunkInfo) => {
           return chunkInfo.name === "embed"
-            ? "embed.js"
+            ? "embed-[hash].js"
             : "assets/[name]-[hash].js";
         },
       },
