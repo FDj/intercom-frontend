@@ -200,7 +200,7 @@ export const CallContainer = styled(CollapsibleItemWrapper)<{
   box-sizing: border-box;
 
   background: ${({ isProgramLine }) =>
-    isProgramLine ? "rgba(73, 67, 124, 0.2)" : "#242424"};
+    isProgramLine ? "#242448" : "#242424"};
 `;
 
 export const CallHeader = styled(HeaderWrapper)`
