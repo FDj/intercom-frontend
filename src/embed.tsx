@@ -165,7 +165,7 @@ function injectStyles() {
 }
 
 // Wrapper component that uses MemoryRouter for embedded mode
-function EmbeddedApp({ initialPath }: { initialPath?: string }) {
+const EmbeddedApp = ({ initialPath }: { initialPath?: string }) => {
   const initialEntries = initialPath ? [`/${initialPath}`] : ["/"];
 
   return (
@@ -173,7 +173,7 @@ function EmbeddedApp({ initialPath }: { initialPath?: string }) {
       <App />
     </MemoryRouter>
   );
-}
+};
 
 // Function to initialize the embedded app
 function initIntercomEmbed(containerId: string) {
@@ -214,24 +214,26 @@ function initIntercomEmbed(containerId: string) {
   }
 
   // Create a wrapper for scaling if it doesn't exist
-  let scaleWrapper = container.querySelector('.intercom-scale-wrapper') as HTMLElement;
+  let scaleWrapper = container.querySelector(
+    ".intercom-scale-wrapper"
+  ) as HTMLElement;
   if (!scaleWrapper) {
-    scaleWrapper = document.createElement('div');
-    scaleWrapper.className = 'intercom-scale-wrapper loading'; // Add loading class initially
+    scaleWrapper = document.createElement("div");
+    scaleWrapper.className = "intercom-scale-wrapper loading"; // Add loading class initially
     container.appendChild(scaleWrapper);
 
     // Create a placeholder
-    const placeholder = document.createElement('div');
-    placeholder.className = 'intercom-embed-placeholder';
+    const placeholder = document.createElement("div");
+    placeholder.className = "intercom-embed-placeholder";
     placeholder.innerHTML = '<div class="spinner"></div>';
     container.appendChild(placeholder);
 
     // Initial fixed height for placeholder (around 80px)
-    container.style.height = '80px';
+    container.style.height = "80px";
 
     // Remove loading state after 2 seconds
     const loadingTimeout = setTimeout(() => {
-      scaleWrapper.classList.remove('loading');
+      scaleWrapper.classList.remove("loading");
       if (placeholder.parentNode) {
         placeholder.parentNode.removeChild(placeholder);
       }
@@ -243,26 +245,26 @@ function initIntercomEmbed(containerId: string) {
   // Set up height adjustment for scaled content
   const adjustHeight = () => {
     // Don't adjust height if still loading
-    if (scaleWrapper.classList.contains('loading')) {
+    if (scaleWrapper.classList.contains("loading")) {
       return;
     }
 
     // Reset height to auto first to get accurate measurement
-    container.style.height = 'auto';
-    
+    container.style.height = "auto";
+
     // Use the scaleWrapper's scrollHeight as it contains the scaled content
     const contentHeight = scaleWrapper.scrollHeight;
-    
+
     // Set the container height to 50% of the content height to match the 0.5 scale
     // Add a slightly larger buffer (4px) to prevent clipping
     const scaledHeight = Math.ceil(contentHeight * 0.5) + 4;
     container.style.height = `${scaledHeight}px`;
-    
+
     // Ensure the first child (React app root) doesn't clip
     const contentElement = scaleWrapper.firstChild as HTMLElement;
     if (contentElement) {
-      contentElement.style.height = 'auto';
-      contentElement.style.overflow = 'visible';
+      contentElement.style.height = "auto";
+      contentElement.style.overflow = "visible";
     }
   };
 
@@ -293,7 +295,8 @@ function initIntercomEmbed(containerId: string) {
 
   // Initial adjustment
   const initialAdjustmentTimeout = setTimeout(adjustHeight, 1000);
-  (container as any)._intercomInitialAdjustmentTimeout = initialAdjustmentTimeout;
+  (container as any)._intercomInitialAdjustmentTimeout =
+    initialAdjustmentTimeout;
 }
 
 const bootEmbeds = () => {
@@ -331,11 +334,11 @@ const teardownEmbeds = () => {
       delete container._intercomInitialAdjustmentTimeout;
     }
     // Remove the scale wrapper and placeholder if they were added
-    const scaleWrapper = container.querySelector('.intercom-scale-wrapper');
+    const scaleWrapper = container.querySelector(".intercom-scale-wrapper");
     if (scaleWrapper) {
       scaleWrapper.remove();
     }
-    const placeholder = container.querySelector('.intercom-embed-placeholder');
+    const placeholder = container.querySelector(".intercom-embed-placeholder");
     if (placeholder) {
       placeholder.remove();
     }
@@ -356,3 +359,6 @@ document.addEventListener("turbo:before-cache", teardownEmbeds);
 (window as any).initIntercomEmbed = initIntercomEmbed;
 (window as any).bootIntercomEmbeds = bootEmbeds;
 (window as any).teardownIntercomEmbeds = teardownEmbeds;
+
+// Run it on load, just in case we missed one of the events:
+bootEmbeds();
