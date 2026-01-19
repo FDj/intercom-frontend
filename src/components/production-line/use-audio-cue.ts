@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import connectionStart from "../../assets/sounds/start-connection-451.wav";
-import connectionStop from "../../assets/sounds/stop-connection-451.wav";
+import connectionStart from "../../assets/sounds/start-connection-451.mp3";
+import connectionStop from "../../assets/sounds/stop-connection-451.mp3";
 
 export const useAudioCue = () => {
   const playEnterSound = useMemo(() => {
