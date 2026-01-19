@@ -39,8 +39,13 @@ export default defineConfig({
             ? "embed-[hash].js"
             : "assets/[name]-[hash].js";
         },
+        manualChunks: (id) => {
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
       },
     },
   },
-  base: "intercom_assets"
+  base: "/intercom_assets/"
 });
