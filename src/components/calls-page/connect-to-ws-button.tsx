@@ -158,10 +158,12 @@ export const ConnectToWSButton = ({
     autoConnectAttempted.current = true;
 
     // Delay auto-connect to ensure component is fully mounted
-    const timeoutId = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       handleConnect(normalizedCompanionUri);
     }, 100);
-    return () => clearTimeout(timeoutId);
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [normalizedCompanionUri, isWSConnected, isWSReconnecting, handleConnect]);
 
   const handlePrimaryClick = () => {
