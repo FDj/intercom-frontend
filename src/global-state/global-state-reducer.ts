@@ -29,16 +29,38 @@ const globalReducer: Reducer<TGlobalState, TGlobalStateAction> = (
     case "ERROR": {
       const { callId, error } = action.payload;
 
-      if (callId && error) {
-        // Call-specific error
+      if (callId) {
+        if (error) {
+          // Call-specific error
+          return {
+            ...state,
+            error: {
+              ...state.error,
+              callErrors: {
+                ...state.error.callErrors,
+                [callId]: error,
+              },
+            },
+          };
+        }
+
+        if (!state.error.callErrors) {
+          return state;
+        }
+
+        // Clear call-specific error
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const { [callId]: _, ...remainingCallErrors } =
+          state.error.callErrors;
+
         return {
           ...state,
           error: {
             ...state.error,
-            callErrors: {
-              ...state.error.callErrors,
-              [callId]: error,
-            },
+            callErrors:
+              Object.keys(remainingCallErrors).length > 0
+                ? remainingCallErrors
+                : null,
           },
         };
       }

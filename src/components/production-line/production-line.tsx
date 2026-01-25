@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams } from "react-router-dom";
 import { isBrowserFirefox, isMobile, isTablet } from "../../bowser.ts";
@@ -84,7 +84,7 @@ export const ProductionLine = ({
   isDeclutterMode = false,
 }: TProductionLine) => {
   const { productionId: paramProductionId, lineId: paramLineId } = useParams();
-  const [, dispatch] = useGlobalState();
+  const [{ error }, dispatch] = useGlobalState();
   const navigate = useNavigate();
   const [connectionActive, setConnectionActive] = useState(true);
   const [isOutputMuted, setIsOutputMuted] = useState(false);
@@ -95,6 +95,8 @@ export const ProductionLine = ({
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
   const [open, setOpen] = useState<boolean>(isDeclutterMode ? false : !isMobile);
+  const reconnectState = useRef({ inProgress: false, lastAttempt: 0 });
+  const reconnectTimeoutRef = useRef<number | null>(null);
   const {
     joinProductionOptions,
     audiooutput,
@@ -137,6 +139,14 @@ export const ProductionLine = ({
     navigate,
     setFailedToConnect,
   ]);
+
+  useEffect(() => {
+    return () => {
+      if (reconnectTimeoutRef.current !== null) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const line = useLinePolling({ callId: id, joinProductionOptions });
   const isProgramOutputLine = line && line.programOutputLine;
@@ -317,6 +327,39 @@ export const ProductionLine = ({
       setConnectionActive(true);
     }
   }, [joinProductionOptions]);
+
+  useEffect(() => {
+    const callError = error.callErrors?.[id];
+    if (
+      !callError ||
+      !callError.message.startsWith("Could not fetch production line") ||
+      !document.querySelector("[data-intercom-embed]") ||
+      !connectionActive
+    ) {
+      return;
+    }
+
+    const now = Date.now();
+    if (
+      reconnectState.current.inProgress ||
+      now - reconnectState.current.lastAttempt < 5000
+    ) {
+      return;
+    }
+
+    reconnectState.current.inProgress = true;
+    reconnectState.current.lastAttempt = now;
+    setConnectionActive(false);
+    dispatch({
+      type: "ERROR",
+      payload: { callId: id, error: null },
+    });
+
+    reconnectTimeoutRef.current = window.setTimeout(() => {
+      setConnectionActive(true);
+      reconnectState.current.inProgress = false;
+    }, 1000);
+  }, [connectionActive, dispatch, error.callErrors, id]);
 
   useMasterInputMute({
     inputAudioStream,
