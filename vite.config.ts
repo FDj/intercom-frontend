@@ -46,6 +46,5 @@ export default defineConfig({
         },
       },
     },
-  },
-  base: "/intercom_assets/"
+  }
 });
