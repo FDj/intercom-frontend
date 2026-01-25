@@ -161,6 +161,7 @@ export const ConnectToWSButton = ({
     const timeoutId = setTimeout(() => {
       handleConnect(normalizedCompanionUri);
     }, 100);
+    return () => clearTimeout(timeoutId);
   }, [normalizedCompanionUri, isWSConnected, isWSReconnecting, handleConnect]);
 
   const handlePrimaryClick = () => {
