@@ -89,7 +89,7 @@ export const ConnectToWSButton = ({
   const [isWSReconnecting, setIsWSReconnecting] = useState(false);
   const [isConnectionConflict, setConnectionConflict] = useState(false);
   const [{ calls }, dispatch] = useGlobalState();
-  const { companionUri } = useUrlParams();
+  const { companionUri, isKioskParam } = useUrlParams();
   const autoConnectAttempted = useRef(false);
 
   // map call ids to indices for actions
@@ -128,6 +128,7 @@ export const ConnectToWSButton = ({
     isWSReconnecting,
     isWSConnected,
     isConnectionConflict, // block retries when true
+    isKioskMode: isKioskParam,
     setIsWSReconnecting,
     wsConnect,
   });
