@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckIcon } from "../../assets/icons/icon";
 import { useGlobalState } from "../../global-state/context-provider";
+import { useUrlParams } from "../../hooks/use-url-params";
 import { useWebSocket } from "../../hooks/use-websocket";
 import { useWebsocketActions } from "../../hooks/use-websocket-actions";
 import { useWebsocketReconnect } from "../../hooks/use-websocket-reconnect";
@@ -88,6 +89,8 @@ export const ConnectToWSButton = ({
   const [isWSReconnecting, setIsWSReconnecting] = useState(false);
   const [isConnectionConflict, setConnectionConflict] = useState(false);
   const [{ calls }, dispatch] = useGlobalState();
+  const { companionUri } = useUrlParams();
+  const autoConnectAttempted = useRef(false);
 
   // map call ids to indices for actions
   useEffect(() => {
@@ -129,11 +132,35 @@ export const ConnectToWSButton = ({
     wsConnect,
   });
 
-  const handleConnect = (url: string) => {
-    setConnectionConflict(false);
-    wsConnect(url);
-    setIsOpen(false);
-  };
+  const handleConnect = useCallback(
+    (url: string) => {
+      setConnectionConflict(false);
+      wsConnect(url);
+      setIsOpen(false);
+    },
+    [wsConnect]
+  );
+
+  const normalizedCompanionUri = useMemo(() => {
+    const value = companionUri?.trim();
+    if (!value) return null;
+    if (value.startsWith("ws://") || value.startsWith("wss://")) return value;
+    const defaultProtocol =
+      window.location.protocol === "https:" ? "wss://" : "ws://";
+    return `${defaultProtocol}${value}`;
+  }, [companionUri]);
+
+  useEffect(() => {
+    if (!normalizedCompanionUri) return;
+    if (autoConnectAttempted.current) return;
+    if (isWSConnected || isWSReconnecting) return;
+    autoConnectAttempted.current = true;
+
+    // Delay auto-connect to ensure component is fully mounted
+    const timeoutId = setTimeout(() => {
+      handleConnect(normalizedCompanionUri);
+    }, 100);
+  }, [normalizedCompanionUri, isWSConnected, isWSReconnecting, handleConnect]);
 
   const handlePrimaryClick = () => {
     if (isConnectionConflict) {

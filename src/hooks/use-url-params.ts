@@ -8,20 +8,24 @@ export const useUrlParams = () => {
   const usernameFromSession = sessionStorage.getItem("username");
   const kioskFromSession = sessionStorage.getItem("kiosk");
   const declutterFromSession = sessionStorage.getItem("declutter");
+  const companionUriFromSession = sessionStorage.getItem("companion-uri");
 
   // Fall back to URL params
   const urlParams = new URLSearchParams(window.location.search);
   const usernameFromUrl = urlParams.get("username");
   const kioskParam = urlParams.get("kiosk");
   const declutterParam = urlParams.get("declutter");
+  const companionUriFromUrl = urlParams.get("companion-uri");
 
   const isDeclutterMode = declutterFromSession === "true" || declutterParam === "1";
   const isKioskParam = kioskFromSession === "true" || kioskParam === "1";
   const username = usernameFromSession || usernameFromUrl;
+  const companionUri = companionUriFromSession || companionUriFromUrl;
 
   return {
     usernameFromUrl: username,
     isKioskParam,
     isDeclutterMode,
+    companionUri,
   };
 };
